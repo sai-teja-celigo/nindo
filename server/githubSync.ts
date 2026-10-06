@@ -192,7 +192,20 @@ ${JSON.stringify(task, null, 2)}
 -->`;
 }
 
-export async function syncGitHubIssues(): Promise<{ success: boolean; syncedCount: number; message: string }> {
+let lastIssueSyncTime = 0;
+const SYNC_COOLDOWN_MS = 30000; // 30 seconds cooldown
+
+export async function syncGitHubIssues(force = false): Promise<{ success: boolean; syncedCount: number; message: string }> {
+  const now = Date.now();
+  if (!force && (now - lastIssueSyncTime < SYNC_COOLDOWN_MS)) {
+    return {
+      success: true,
+      syncedCount: 0,
+      message: 'GitHub issues sync skipped (synced within last 30s).',
+    };
+  }
+  lastIssueSyncTime = now;
+
   try {
     const { octokit, owner, repo, token } = await getOctokit();
 

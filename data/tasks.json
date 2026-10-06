@@ -256,7 +256,7 @@
     "createdAt": "2026-10-06T18:47:06Z",
     "originalDueDate": "2026-10-06",
     "currentDueDate": "2026-10-06",
-    "status": "OPEN",
+    "status": "DROPPED",
     "rolloverCount": 0,
     "createdDuringDay": false
   },
@@ -269,7 +269,7 @@
     "createdAt": "2026-10-06T18:47:06Z",
     "originalDueDate": "2026-10-06",
     "currentDueDate": "2026-10-06",
-    "status": "OPEN",
+    "status": "DROPPED",
     "rolloverCount": 0,
     "createdDuringDay": false
   },
@@ -282,7 +282,7 @@
     "createdAt": "2026-10-06T18:47:06Z",
     "originalDueDate": "2026-10-06",
     "currentDueDate": "2026-10-06",
-    "status": "OPEN",
+    "status": "DROPPED",
     "rolloverCount": 0,
     "createdDuringDay": false
   },
@@ -295,7 +295,7 @@
     "createdAt": "2026-10-06T18:47:06Z",
     "originalDueDate": "2026-10-06",
     "currentDueDate": "2026-10-06",
-    "status": "OPEN",
+    "status": "DROPPED",
     "rolloverCount": 0,
     "createdDuringDay": false
   },
@@ -321,7 +321,7 @@
     "createdAt": "2026-10-06T18:47:05Z",
     "originalDueDate": "2026-10-06",
     "currentDueDate": "2026-10-06",
-    "status": "OPEN",
+    "status": "DROPPED",
     "rolloverCount": 0,
     "createdDuringDay": false
   },
@@ -334,7 +334,7 @@
     "createdAt": "2026-10-06T18:47:05Z",
     "originalDueDate": "2026-10-06",
     "currentDueDate": "2026-10-06",
-    "status": "OPEN",
+    "status": "DROPPED",
     "rolloverCount": 0,
     "createdDuringDay": false
   },
@@ -347,7 +347,7 @@
     "createdAt": "2026-10-06T18:47:05Z",
     "originalDueDate": "2026-10-06",
     "currentDueDate": "2026-10-06",
-    "status": "OPEN",
+    "status": "DROPPED",
     "rolloverCount": 0,
     "createdDuringDay": false
   },
@@ -360,7 +360,7 @@
     "createdAt": "2026-10-06T18:47:05Z",
     "originalDueDate": "2026-10-06",
     "currentDueDate": "2026-10-06",
-    "status": "OPEN",
+    "status": "DROPPED",
     "rolloverCount": 0,
     "createdDuringDay": false
   },
@@ -386,7 +386,7 @@
     "createdAt": "2026-10-06T18:47:05Z",
     "originalDueDate": "2026-10-06",
     "currentDueDate": "2026-10-06",
-    "status": "OPEN",
+    "status": "DROPPED",
     "rolloverCount": 0,
     "createdDuringDay": false
   },
@@ -399,7 +399,7 @@
     "createdAt": "2026-10-06T18:47:04Z",
     "originalDueDate": "2026-10-06",
     "currentDueDate": "2026-10-06",
-    "status": "OPEN",
+    "status": "DROPPED",
     "rolloverCount": 0,
     "createdDuringDay": false
   },
@@ -412,7 +412,7 @@
     "createdAt": "2026-10-06T18:47:04Z",
     "originalDueDate": "2026-10-06",
     "currentDueDate": "2026-10-06",
-    "status": "OPEN",
+    "status": "DROPPED",
     "rolloverCount": 0,
     "createdDuringDay": false
   },
@@ -425,7 +425,7 @@
     "createdAt": "2026-10-06T18:47:04Z",
     "originalDueDate": "2026-10-06",
     "currentDueDate": "2026-10-06",
-    "status": "OPEN",
+    "status": "DROPPED",
     "rolloverCount": 0,
     "createdDuringDay": false
   },
@@ -438,7 +438,7 @@
     "createdAt": "2026-10-06T18:47:04Z",
     "originalDueDate": "2026-10-06",
     "currentDueDate": "2026-10-06",
-    "status": "OPEN",
+    "status": "DROPPED",
     "rolloverCount": 0,
     "createdDuringDay": false
   },
@@ -464,7 +464,7 @@
     "createdAt": "2026-10-06T18:47:04Z",
     "originalDueDate": "2026-10-06",
     "currentDueDate": "2026-10-06",
-    "status": "OPEN",
+    "status": "DROPPED",
     "rolloverCount": 0,
     "createdDuringDay": false
   },
@@ -490,7 +490,7 @@
     "createdAt": "2026-10-06T18:47:03Z",
     "originalDueDate": "2026-10-06",
     "currentDueDate": "2026-10-06",
-    "status": "OPEN",
+    "status": "DROPPED",
     "rolloverCount": 0,
     "createdDuringDay": false
   },
@@ -542,7 +542,7 @@
     "createdAt": "2026-10-06T18:46:59Z",
     "originalDueDate": "2026-10-06",
     "currentDueDate": "2026-10-06",
-    "status": "OPEN",
+    "status": "DROPPED",
     "rolloverCount": 0,
     "createdDuringDay": false
   },
@@ -555,7 +555,7 @@
     "createdAt": "2026-10-06T18:46:58Z",
     "originalDueDate": "2026-10-06",
     "currentDueDate": "2026-10-06",
-    "status": "OPEN",
+    "status": "DROPPED",
     "rolloverCount": 0,
     "createdDuringDay": false
   },
@@ -568,7 +568,7 @@
     "createdAt": "2026-10-06T18:46:57Z",
     "originalDueDate": "2026-10-06",
     "currentDueDate": "2026-10-06",
-    "status": "OPEN",
+    "status": "DROPPED",
     "rolloverCount": 0,
     "createdDuringDay": false
   },

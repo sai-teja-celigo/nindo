@@ -484,7 +484,7 @@ app.get('/api/git/status', async (req, res) => {
 });
 
 app.post('/api/git/sync', async (req, res) => {
-  const issueResult = await syncGitHubIssues().catch(err => ({ success: false, message: (err as Error).message }));
+  const issueResult = await syncGitHubIssues(true).catch(err => ({ success: false, message: (err as Error).message }));
   const gitResult = await performGitSync(req.body.message);
   res.json({
     success: gitResult.success,
