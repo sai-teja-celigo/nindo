@@ -1,0 +1,101 @@
+[
+  {
+    "id": "1",
+    "title": "Finish CDC debugging",
+    "owner": "soit",
+    "createdAt": "2026-10-06T08:00:00.000Z",
+    "originalDueDate": "2026-10-06",
+    "currentDueDate": "2026-10-06",
+    "status": "OPEN",
+    "rolloverCount": 0,
+    "createdDuringDay": false
+  },
+  {
+    "id": "2",
+    "title": "Review PR #42",
+    "owner": "soit",
+    "createdAt": "2026-10-06T08:15:00.000Z",
+    "originalDueDate": "2026-10-06",
+    "currentDueDate": "2026-10-06",
+    "status": "OPEN",
+    "rolloverCount": 0,
+    "createdDuringDay": false
+  },
+  {
+    "id": "3",
+    "title": "Read 20 pages of System Design",
+    "owner": "soit",
+    "createdAt": "2026-10-06T08:30:00.000Z",
+    "originalDueDate": "2026-10-06",
+    "currentDueDate": "2026-10-06",
+    "status": "OPEN",
+    "rolloverCount": 0,
+    "createdDuringDay": false
+  },
+  {
+    "id": "4",
+    "title": "Finish authentication module",
+    "owner": "soit",
+    "createdAt": "2026-10-06T09:00:00.000Z",
+    "originalDueDate": "2026-10-08",
+    "currentDueDate": "2026-10-08",
+    "status": "OPEN",
+    "rolloverCount": 0,
+    "createdDuringDay": false
+  },
+  {
+    "id": "5",
+    "title": "Ship MVP release",
+    "owner": "soit",
+    "createdAt": "2026-10-06T09:30:00.000Z",
+    "originalDueDate": "2026-10-25",
+    "currentDueDate": "2026-10-25",
+    "status": "OPEN",
+    "rolloverCount": 0,
+    "createdDuringDay": false
+  },
+  {
+    "id": "6",
+    "title": "Refactor database query performance",
+    "owner": "kox",
+    "createdAt": "2026-10-06T08:00:00.000Z",
+    "originalDueDate": "2026-10-06",
+    "currentDueDate": "2026-10-06",
+    "status": "OPEN",
+    "rolloverCount": 1,
+    "createdDuringDay": false
+  },
+  {
+    "id": "7",
+    "title": "Deploy staging environment",
+    "owner": "kox",
+    "createdAt": "2026-10-06T08:30:00.000Z",
+    "originalDueDate": "2026-10-06",
+    "currentDueDate": "2026-10-06",
+    "status": "OPEN",
+    "rolloverCount": 0,
+    "createdDuringDay": false
+  },
+  {
+    "id": "8",
+    "title": "Write unit tests for checkout",
+    "owner": "kox",
+    "createdAt": "2026-10-06T09:00:00.000Z",
+    "originalDueDate": "2026-10-06",
+    "currentDueDate": "2026-10-06",
+    "status": "OPEN",
+    "rolloverCount": 0,
+    "createdDuringDay": false
+  },
+  {
+    "id": "9",
+    "title": "Update API documentation",
+    "owner": "kox",
+    "createdAt": "2026-10-06T09:30:00.000Z",
+    "originalDueDate": "2026-10-09",
+    "currentDueDate": "2026-10-09",
+    "status": "OPEN",
+    "rolloverCount": 0,
+    "createdDuringDay": false
+  }
+]

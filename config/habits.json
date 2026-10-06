@@ -1,0 +1,38 @@
+[
+  {
+    "id": "habit-exercise-soit",
+    "name": "Exercise 30 mins",
+    "owner": "soit",
+    "frequency": "daily"
+  },
+  {
+    "id": "habit-screen-soit",
+    "name": "Screen time < 3 hours",
+    "owner": "soit",
+    "frequency": "daily"
+  },
+  {
+    "id": "habit-steps-kox",
+    "name": "8,000 steps",
+    "owner": "kox",
+    "frequency": "daily"
+  },
+  {
+    "id": "habit-meditate-kox",
+    "name": "Meditate 10 mins",
+    "owner": "kox",
+    "frequency": "daily"
+  },
+  {
+    "id": "habit-deepwork-kox",
+    "name": "Deep Work 4 hours",
+    "owner": "kox",
+    "frequency": "daily"
+  },
+  {
+    "id": "habit-1791306389564-tc6f",
+    "name": "no snacking",
+    "owner": "soit",
+    "frequency": "daily"
+  }
+]

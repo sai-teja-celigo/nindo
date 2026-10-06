@@ -1,0 +1,44 @@
+name: Quick Add Todo
+description: Add a new task to your Nindo daily productivity backlog
+title: "[TODO]: "
+labels: ["todo"]
+body:
+  - type: input
+    id: task
+    attributes:
+      label: Task Title
+      description: What do you need to do?
+      placeholder: e.g., Finish CDC debugging
+    validations:
+      required: true
+  - type: dropdown
+    id: owner
+    attributes:
+      label: Owner
+      description: Who is responsible for this task?
+      options:
+        - soit
+        - kox
+    validations:
+      required: true
+  - type: dropdown
+    id: dueDate
+    attributes:
+      label: Due Date Shortcut
+      description: When is this task due?
+      options:
+        - Today
+        - Tomorrow
+        - Weekend
+        - +7 days
+        - Month end
+        - +30 days
+        - Custom
+    validations:
+      required: true
+  - type: input
+    id: customDueDate
+    attributes:
+      label: Custom Due Date (YYYY-MM-DD)
+      description: Required if Custom is selected above.
+      placeholder: e.g., 2026-10-20

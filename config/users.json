@@ -1,0 +1,18 @@
+[
+  {
+    "id": "soit",
+    "name": "Soit",
+    "githubUsername": "sai-teja-m",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Soit",
+    "weekStart": "monday",
+    "timezone": "UTC"
+  },
+  {
+    "id": "kox",
+    "name": "Kox",
+    "githubUsername": "saikaushikvardhan",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Kox",
+    "weekStart": "monday",
+    "timezone": "UTC"
+  }
+]
