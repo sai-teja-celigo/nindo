@@ -45,11 +45,12 @@
     "createdAt": "2026-10-06T09:00:00.000Z",
     "originalDueDate": "2026-10-08",
     "currentDueDate": "2026-10-08",
-    "status": "OPEN",
+    "status": "COMPLETED",
     "rolloverCount": 0,
     "createdDuringDay": false,
     "githubIssueNumber": 7,
-    "githubIssueUrl": "https://github.com/sai-teja-celigo/nindo/issues/7"
+    "githubIssueUrl": "https://github.com/sai-teja-celigo/nindo/issues/7",
+    "completedAt": "2026-10-06T19:01:50.195Z"
   },
   {
     "id": "5",
