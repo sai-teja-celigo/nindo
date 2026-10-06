@@ -26,10 +26,11 @@ export interface GitHubRepoInfo {
 }
 
 export async function getGitHubRepoInfo(): Promise<GitHubRepoInfo> {
-  let owner = 'sai-teja-celigo';
-  let repo = 'nindo';
+  let owner = process.env.GITHUB_OWNER || 'sai-teja-m';
+  let repo = process.env.GITHUB_REPO || 'nindo';
   let token: string | undefined = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
 
+  // 1. Try reading token from git config if not set in process.env
   if (!token) {
     try {
       const { stdout } = await execAsync('git config --get-all http.extraheader');
@@ -55,22 +56,25 @@ export async function getGitHubRepoInfo(): Promise<GitHubRepoInfo> {
     } catch {}
   }
 
-  try {
-    const { stdout } = await execAsync('git remote get-url origin');
-    const url = stdout.trim();
+  // 2. Only if GITHUB_OWNER is not explicitly provided, try parsing git remote origin URL
+  if (!process.env.GITHUB_OWNER) {
+    try {
+      const { stdout } = await execAsync('git remote get-url origin');
+      const url = stdout.trim();
 
-    const tokenMatch = url.match(/https:\/\/([^:@]+)@github\.com/);
-    if (tokenMatch && tokenMatch[1] !== 'git') {
-      token = tokenMatch[1];
-    }
+      const tokenMatch = url.match(/https:\/\/([^:@]+)@github\.com/);
+      if (tokenMatch && tokenMatch[1] !== 'git') {
+        token = tokenMatch[1];
+      }
 
-    const ownerRepoMatch = url.match(/github\.com[:\/]([^\/]+)\/([^\/\s\.]+)/);
-    if (ownerRepoMatch) {
-      owner = ownerRepoMatch[1];
-      repo = ownerRepoMatch[2].replace(/\.git$/, '');
+      const ownerRepoMatch = url.match(/github\.com[:\/]([^\/]+)\/([^\/\s\.]+)/);
+      if (ownerRepoMatch) {
+        owner = ownerRepoMatch[1];
+        repo = ownerRepoMatch[2].replace(/\.git$/, '');
+      }
+    } catch (err) {
+      console.warn('Could not determine git remote origin:', (err as Error).message);
     }
-  } catch (err) {
-    console.warn('Could not determine git remote origin:', (err as Error).message);
   }
 
   return {
