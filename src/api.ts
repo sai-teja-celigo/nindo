@@ -139,3 +139,27 @@ export async function fetchWeeklyReview(user: string): Promise<any> {
   if (!res.ok) throw new Error('Failed to fetch weekly review');
   return res.json();
 }
+
+export async function fetchGitStatus(): Promise<{
+  isGitRepo: boolean;
+  branch?: string;
+  remoteUrl?: string;
+  hasUncommittedChanges?: boolean;
+}> {
+  const res = await fetch(`${API_BASE}/git/status`);
+  if (!res.ok) return { isGitRepo: false };
+  return res.json();
+}
+
+export async function syncGitRepo(message?: string): Promise<{
+  success: boolean;
+  message: string;
+}> {
+  const res = await fetch(`${API_BASE}/git/sync`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message }),
+  });
+  if (!res.ok) throw new Error('Failed to perform Git sync');
+  return res.json();
+}

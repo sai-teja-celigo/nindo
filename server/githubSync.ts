@@ -1,29 +1,65 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import fs from 'fs/promises';
-import path from 'path';
 import { Task } from '../shared/types.js';
+import { getToday } from '../shared/dateUtils.js';
 
 const execAsync = promisify(exec);
 
-export async function isGhAvailable(): Promise<boolean> {
+export interface GitHubStatus {
+  authenticated: boolean;
+  username?: string;
+  repoName?: string;
+  repoUrl?: string;
+}
+
+export async function getGitHubStatus(): Promise<GitHubStatus> {
   try {
-    const { stdout } = await execAsync('gh auth status');
-    return true;
+    const { stdout: authOut } = await execAsync('gh auth status');
+    const userMatch = authOut.match(/Logged in to github\.com account ([^\s]+)/) || authOut.match(/Logged in to github\.com as ([^\s]+)/);
+    const username = userMatch ? userMatch[1] : undefined;
+
+    let repoName: string | undefined;
+    let repoUrl: string | undefined;
+
+    try {
+      const { stdout: repoOut } = await execAsync('gh repo view --json nameWithOwner,url');
+      const data = JSON.parse(repoOut);
+      repoName = data.nameWithOwner;
+      repoUrl = data.url;
+    } catch {
+      // not in a git repo with GitHub origin
+    }
+
+    return {
+      authenticated: true,
+      username,
+      repoName,
+      repoUrl,
+    };
   } catch {
-    return false;
+    return { authenticated: false };
   }
 }
 
-export function parseIssueMetadata(body: string): Partial<Task> {
+export function parseIssueMetadata(body: string, labels: any[] = []): Partial<Task> {
   const metadata: Partial<Task> = {};
+
+  // Parse user label if available (e.g. "user:soit" or "user:kox")
+  if (Array.isArray(labels)) {
+    const userLabel = labels.find((l: any) => typeof l.name === 'string' && l.name.startsWith('user:'));
+    if (userLabel) {
+      metadata.owner = userLabel.name.replace('user:', '');
+    }
+  }
+
   if (!body) return metadata;
 
-  // Try parsing JSON block inside comments first
+  // Try parsing JSON block inside comment block first
   const jsonMatch = body.match(/<!--\s*metadata\s*([\s\S]*?)\s*-->/);
   if (jsonMatch) {
     try {
-      return JSON.parse(jsonMatch[1]);
+      const parsed = JSON.parse(jsonMatch[1]);
+      return { ...metadata, ...parsed };
     } catch {
       // ignore
     }
@@ -102,5 +138,39 @@ export async function updateGitHubIssue(task: Task): Promise<boolean> {
   } catch (err) {
     console.warn(`GitHub Issue update for #${task.githubIssueNumber} failed:`, (err as Error).message);
     return false;
+  }
+}
+
+export async function fetchRemoteGitHubIssues(): Promise<Partial<Task>[]> {
+  try {
+    const { stdout } = await execAsync('gh issue list --label todo --state all --json number,title,body,state,labels,url');
+    const rawIssues = JSON.parse(stdout);
+    const today = getToday();
+
+    return rawIssues.map((issue: any) => {
+      const parsedMeta = parseIssueMetadata(issue.body, issue.labels);
+      const isClosed = issue.state === 'CLOSED';
+      
+      const status: 'OPEN' | 'COMPLETED' | 'DROPPED' = isClosed 
+        ? (parsedMeta.status === 'DROPPED' ? 'DROPPED' : 'COMPLETED') 
+        : 'OPEN';
+
+      return {
+        id: `gh-${issue.number}`,
+        githubIssueNumber: issue.number,
+        githubIssueUrl: issue.url,
+        title: issue.title.replace(/^\[TODO\]:\s*/i, ''),
+        owner: parsedMeta.owner || 'soit',
+        originalDueDate: parsedMeta.originalDueDate || today,
+        currentDueDate: parsedMeta.currentDueDate || today,
+        rolloverCount: parsedMeta.rolloverCount || 0,
+        status,
+        createdDuringDay: parsedMeta.createdDuringDay || false,
+        createdAt: new Date().toISOString(),
+      };
+    });
+  } catch (err) {
+    console.warn('Failed to fetch remote GitHub issues:', (err as Error).message);
+    return [];
   }
 }

@@ -14,7 +14,7 @@ import {
   ProductivityReason
 } from '../shared/types.js';
 import { getToday, getShortcutDate, getWeekStart, getWeekEnd, getMonthEnd, addDays } from '../shared/dateUtils.js';
-import { createGitHubIssue, updateGitHubIssue, isGhAvailable } from './githubSync.js';
+import { getGitStatus, performGitSync } from './gitSync.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -62,10 +62,11 @@ app.get('/api/users', (req, res) => {
   res.json(users);
 });
 
-app.post('/api/users', (req, res) => {
+app.post('/api/users', async (req, res) => {
   const users = req.body;
   writeJsonFile(USERS_FILE, users);
   res.json({ success: true, users });
+  performGitSync('config: update users').catch(() => {});
 });
 
 // Habits API
@@ -74,10 +75,11 @@ app.get('/api/habits', (req, res) => {
   res.json(habits);
 });
 
-app.post('/api/habits', (req, res) => {
+app.post('/api/habits', async (req, res) => {
   const habits = req.body;
   writeJsonFile(HABITS_FILE, habits);
   res.json({ success: true, habits });
+  performGitSync('config: update daily habits').catch(() => {});
 });
 
 // Tasks API
@@ -109,16 +111,12 @@ app.post('/api/tasks', async (req, res) => {
     createdDuringDay: hasStartedDay && dueDate === today,
   };
 
-  // Attempt GitHub Issue Creation
-  const ghResult = await createGitHubIssue(newTask);
-  if (ghResult.number) {
-    newTask.githubIssueNumber = ghResult.number;
-    newTask.githubIssueUrl = ghResult.url;
-  }
-
   tasks.push(newTask);
   writeJsonFile(TASKS_FILE, tasks);
   res.json({ success: true, task: newTask });
+
+  // Auto Git Sync
+  performGitSync(`task: create "${newTask.title}" for ${owner}`).catch(() => {});
 });
 
 app.patch('/api/tasks/:id', async (req, res) => {
@@ -147,7 +145,6 @@ app.patch('/api/tasks/:id', async (req, res) => {
   }
 
   if (currentDueDate !== undefined && currentDueDate !== task.currentDueDate) {
-    // Rollover rule: preserve originalDueDate, increment rolloverCount
     task.currentDueDate = currentDueDate;
     task.rolloverCount += 1;
   }
@@ -155,10 +152,9 @@ app.patch('/api/tasks/:id', async (req, res) => {
   tasks[taskIndex] = task;
   writeJsonFile(TASKS_FILE, tasks);
 
-  // Sync to GitHub if issue number present
-  await updateGitHubIssue(task);
-
   res.json({ success: true, task });
+
+  performGitSync(`task: update "${task.title}" status=${task.status}`).catch(() => {});
 });
 
 // Commitments (Start Day) API
@@ -169,14 +165,13 @@ app.get('/api/commitments/:user/:date', (req, res) => {
   res.json(commitment);
 });
 
-app.post('/api/commitments', (req, res) => {
+app.post('/api/commitments', async (req, res) => {
   const { date, user, committedTaskIds, mustWinTaskId } = req.body;
   const userDir = path.join(COMMITMENTS_DIR, user);
   if (!fs.existsSync(userDir)) fs.mkdirSync(userDir, { recursive: true });
   
   const filePath = path.join(userDir, `${date}.json`);
   
-  // Do not allow silently rewriting if already closed
   const existing = readJsonFile<DailyCommitment | null>(filePath, null);
   if (existing && existing.status === 'CLOSED') {
     return res.status(400).json({ error: 'Day is already closed.' });
@@ -193,6 +188,8 @@ app.post('/api/commitments', (req, res) => {
 
   writeJsonFile(filePath, commitment);
   res.json({ success: true, commitment });
+
+  performGitSync(`commitment: start day for ${user} on ${date}`).catch(() => {});
 });
 
 // Check-ins (End Day) API
@@ -203,7 +200,7 @@ app.get('/api/checkins/:user/:date', (req, res) => {
   res.json(checkin);
 });
 
-app.post('/api/checkins', (req, res) => {
+app.post('/api/checkins', async (req, res) => {
   const { 
     date, 
     user, 
@@ -244,6 +241,8 @@ app.post('/api/checkins', (req, res) => {
   }
 
   res.json({ success: true, checkin });
+
+  performGitSync(`checkin: finish day for ${user} on ${date} (Mood: ${mood})`).catch(() => {});
 });
 
 // Helper function to calculate user metrics
@@ -304,7 +303,6 @@ function calculateUserMetrics(user: UserConfig, timeframe: 'week' | 'month' | 'a
       if (c.mustWinCompleted) mustWinsCompleted++;
     }
 
-    // Perfect Day evaluation
     const habitPct = c.totalHabits > 0 ? (c.completedHabits.length / c.totalHabits) : 1;
     const taskPct = committedCount > 0 ? (completedCommittedCount / committedCount) : 1;
     const mustWinPassed = c.mustWinCompleted !== undefined ? c.mustWinCompleted : true;
@@ -314,7 +312,6 @@ function calculateUserMetrics(user: UserConfig, timeframe: 'week' | 'month' | 'a
     }
   });
 
-  // Calculate rollovers for this user's tasks
   const allTasks = readJsonFile<Task[]>(TASKS_FILE, []);
   const userTasks = allTasks.filter(t => t.owner === user.id);
   const rolloversCount = userTasks.reduce((acc, t) => acc + t.rolloverCount, 0);
@@ -373,7 +370,6 @@ app.get('/api/review/weekly', (req, res) => {
     });
   }
 
-  // Habits breakdown & missed count
   const habits = readJsonFile<DailyHabit[]>(HABITS_FILE, []).filter(h => h.owner === currentUserId);
   const habitMissCounts: Record<string, number> = {};
   habits.forEach(h => { habitMissCounts[h.name] = 0; });
@@ -405,7 +401,6 @@ app.get('/api/review/weekly', (req, res) => {
     totalHabitsScheduled += c.totalHabits;
     totalHabitsCompleted += c.completedHabits.length;
 
-    // Track missed habits
     habits.forEach(h => {
       if (!c.completedHabits.includes(h.id)) {
         habitMissCounts[h.name] = (habitMissCounts[h.name] || 0) + 1;
@@ -435,7 +430,6 @@ app.get('/api/review/weekly', (req, res) => {
     .filter(t => t.owner === currentUserId && t.currentDueDate >= weekStart && t.currentDueDate <= weekEnd)
     .reduce((acc, t) => acc + t.rolloverCount, 0);
 
-  // Determine most missed habit
   let mostMissedHabit = 'None';
   let maxMisses = 0;
   Object.entries(habitMissCounts).forEach(([name, misses]) => {
@@ -468,6 +462,17 @@ app.get('/api/review/weekly', (req, res) => {
       .map(([reason, count]) => ({ reason, count }))
       .sort((a, b) => b.count - a.count)
   });
+});
+
+// Git Repository Sync Endpoints
+app.get('/api/git/status', async (req, res) => {
+  const status = await getGitStatus();
+  res.json(status);
+});
+
+app.post('/api/git/sync', async (req, res) => {
+  const result = await performGitSync(req.body.message);
+  res.json(result);
 });
 
 const PORT = process.env.PORT || 3001;

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserConfig, DailyHabit } from '../../shared/types';
-import { Settings as SettingsIcon, User, Repeat, Save, Plus, Trash2 } from 'lucide-react';
+import { fetchGitStatus, syncGitRepo } from '../api';
+import { Settings as SettingsIcon, User, Repeat, Save, Plus, Trash2, GitBranch, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react';
 
 interface SettingsViewProps {
   users: UserConfig[];
@@ -19,6 +20,20 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   const [localHabits, setLocalHabits] = useState<DailyHabit[]>(habits);
   const [newHabitName, setNewHabitName] = useState<Record<string, string>>({});
   const [isSaved, setIsSaved] = useState(false);
+
+  // Git status state
+  const [gitStatus, setGitStatus] = useState<{
+    isGitRepo: boolean;
+    branch?: string;
+    remoteUrl?: string;
+    hasUncommittedChanges?: boolean;
+  } | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchGitStatus().then(setGitStatus).catch(console.error);
+  }, []);
 
   const handleUserChange = (index: number, key: keyof UserConfig, value: string) => {
     const updated = [...localUsers];
@@ -52,6 +67,21 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     setTimeout(() => setIsSaved(false), 2500);
   };
 
+  const handleSyncGit = async () => {
+    setIsSyncing(true);
+    setSyncMessage(null);
+    try {
+      const res = await syncGitRepo();
+      setSyncMessage(res.message);
+      const updatedStatus = await fetchGitStatus();
+      setGitStatus(updatedStatus);
+    } catch (err) {
+      setSyncMessage(`Sync error: ${(err as Error).message}`);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   return (
     <div className="space-y-8 max-w-4xl mx-auto animate-fade-in">
       {/* Header */}
@@ -59,10 +89,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         <div>
           <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
             <SettingsIcon className="w-6 h-6 text-indigo-400" />
-            Settings & Habit Configuration
+            Settings & Git Repository Integration
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Configure independent user profiles and personal daily habits per friend.
+            Configure independent user profiles, standard Git repo syncing, and personal habits.
           </p>
         </div>
 
@@ -73,6 +103,58 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           <Save className="w-4 h-4" />
           {isSaved ? 'Saved!' : 'Save Settings'}
         </button>
+      </div>
+
+      {/* Git Repository Sync Configuration */}
+      <div className="glass-panel rounded-2xl p-6 border-slate-800 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+          <div>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+              <GitBranch className="w-4 h-4 text-indigo-400" />
+              Git Repository Sync (<code className="text-indigo-300">git pull --rebase</code> & <code className="text-indigo-300">git push</code>)
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Sync tasks, commitments, check-ins, and habits automatically using native <code className="text-indigo-300">git</code> commands.
+            </p>
+          </div>
+
+          <button
+            onClick={handleSyncGit}
+            disabled={isSyncing}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600/20 text-indigo-300 hover:bg-indigo-600/30 border border-indigo-500/30 font-semibold text-xs transition-all disabled:opacity-50 self-start sm:self-auto"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
+            {isSyncing ? 'Syncing...' : 'Sync Git Repo'}
+          </button>
+        </div>
+
+        {syncMessage && (
+          <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-xs text-indigo-300 flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-indigo-400" />
+            <span>{syncMessage}</span>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <div className="p-3.5 rounded-xl glass-card space-y-1">
+            <span className="text-slate-400 font-semibold block uppercase">Git Branch</span>
+            <span className="font-bold text-slate-200 text-sm flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+              {gitStatus?.branch || 'main'}
+            </span>
+          </div>
+
+          <div className="p-3.5 rounded-xl glass-card space-y-1">
+            <span className="text-slate-400 font-semibold block uppercase">Remote Origin URL</span>
+            <span className="font-bold text-slate-200 text-sm flex items-center gap-1.5 truncate">
+              {gitStatus?.remoteUrl ? (
+                <span className="text-indigo-400 font-mono">{gitStatus.remoteUrl}</span>
+              ) : (
+                <span className="text-slate-400 font-medium">Local Git Repository</span>
+              )}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* User Profiles Configuration */}
