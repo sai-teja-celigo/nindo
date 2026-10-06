@@ -21,15 +21,27 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   const [newHabitName, setNewHabitName] = useState<Record<string, string>>({});
   const [isSaved, setIsSaved] = useState(false);
 
-  // Git status state
   const [gitStatus, setGitStatus] = useState<{
     isGitRepo: boolean;
     branch?: string;
     remoteUrl?: string;
     hasUncommittedChanges?: boolean;
+    github?: {
+      owner: string;
+      repo: string;
+      authenticated: boolean;
+    };
   } | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLocalUsers(users);
+  }, [users]);
+
+  useEffect(() => {
+    setLocalHabits(habits);
+  }, [habits]);
 
   useEffect(() => {
     fetchGitStatus().then(setGitStatus).catch(console.error);
@@ -135,7 +147,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
           <div className="p-3.5 rounded-xl glass-card space-y-1">
             <span className="text-slate-400 font-semibold block uppercase">Git Branch</span>
             <span className="font-bold text-slate-200 text-sm flex items-center gap-1.5">
@@ -145,12 +157,24 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           </div>
 
           <div className="p-3.5 rounded-xl glass-card space-y-1">
-            <span className="text-slate-400 font-semibold block uppercase">Remote Origin URL</span>
+            <span className="text-slate-400 font-semibold block uppercase">Remote Origin</span>
             <span className="font-bold text-slate-200 text-sm flex items-center gap-1.5 truncate">
               {gitStatus?.remoteUrl ? (
-                <span className="text-indigo-400 font-mono">{gitStatus.remoteUrl}</span>
+                <span className="text-indigo-400 font-mono text-xs truncate">{gitStatus.remoteUrl}</span>
               ) : (
-                <span className="text-slate-400 font-medium">Local Git Repository</span>
+                <span className="text-slate-400 font-medium">Local Repository</span>
+              )}
+            </span>
+          </div>
+
+          <div className="p-3.5 rounded-xl glass-card space-y-1">
+            <span className="text-slate-400 font-semibold block uppercase">GitHub Issue API Token</span>
+            <span className="font-bold text-slate-200 text-sm flex items-center gap-1.5">
+              <span className={`w-2 h-2 rounded-full ${gitStatus?.github?.authenticated ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+              {gitStatus?.github?.authenticated ? (
+                <span className="text-emerald-400 font-semibold">Active (.env)</span>
+              ) : (
+                <span className="text-amber-400 font-medium">Not configured</span>
               )}
             </span>
           </div>

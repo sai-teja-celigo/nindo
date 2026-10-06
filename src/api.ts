@@ -145,6 +145,11 @@ export async function fetchGitStatus(): Promise<{
   branch?: string;
   remoteUrl?: string;
   hasUncommittedChanges?: boolean;
+  github?: {
+    owner: string;
+    repo: string;
+    authenticated: boolean;
+  };
 }> {
   const res = await fetch(`${API_BASE}/git/status`);
   if (!res.ok) return { isGitRepo: false };

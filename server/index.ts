@@ -1,3 +1,4 @@
+import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import fs from 'fs';
@@ -15,10 +16,13 @@ import {
 } from '../shared/types.js';
 import { getToday, getShortcutDate, getWeekStart, getWeekEnd, getMonthEnd, addDays } from '../shared/dateUtils.js';
 import { getGitStatus, performGitSync } from './gitSync.js';
+import { syncGitHubIssues, getGitHubRepoInfo } from './githubSync.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
+
+dotenv.config({ path: path.resolve(ROOT_DIR, '.env') });
 
 const CONFIG_DIR = path.join(ROOT_DIR, 'config');
 const DATA_DIR = path.join(ROOT_DIR, 'data');
@@ -83,7 +87,8 @@ app.post('/api/habits', async (req, res) => {
 });
 
 // Tasks API
-app.get('/api/tasks', (req, res) => {
+app.get('/api/tasks', async (req, res) => {
+  await syncGitHubIssues().catch(err => console.warn('syncGitHubIssues failed:', err));
   const tasks = readJsonFile<Task[]>(TASKS_FILE, []);
   res.json(tasks);
 });
@@ -467,15 +472,27 @@ app.get('/api/review/weekly', (req, res) => {
 // Git Repository Sync Endpoints
 app.get('/api/git/status', async (req, res) => {
   const status = await getGitStatus();
-  res.json(status);
+  const githubInfo = await getGitHubRepoInfo();
+  res.json({
+    ...status,
+    github: {
+      owner: githubInfo.owner,
+      repo: githubInfo.repo,
+      authenticated: githubInfo.authenticated,
+    }
+  });
 });
 
 app.post('/api/git/sync', async (req, res) => {
-  const result = await performGitSync(req.body.message);
-  res.json(result);
+  const issueResult = await syncGitHubIssues().catch(err => ({ success: false, message: (err as Error).message }));
+  const gitResult = await performGitSync(req.body.message);
+  res.json({
+    success: gitResult.success,
+    message: `${gitResult.message} ${issueResult?.message || ''}`.trim()
+  });
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.SERVER_PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Nindo Local Backend API running on http://localhost:${PORT}`);
 });

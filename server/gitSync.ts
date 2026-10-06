@@ -44,8 +44,8 @@ export async function getGitStatus(): Promise<GitStatus> {
 
 export async function performGitSync(commitMessage?: string): Promise<{ success: boolean; message: string }> {
   try {
-    // 1. Stage config and data directories
-    await execAsync('git add config/ data/');
+    // 1. Stage config, data and project changes
+    await execAsync('git add -A');
 
     // 2. Check if there are staged changes to commit
     let committed = false;
@@ -66,13 +66,14 @@ export async function performGitSync(commitMessage?: string): Promise<{ success:
       // fallback
     }
 
-    // 4. Pull latest changes from remote origin
+    // 4. Fetch and rebase latest changes from remote origin using autostash
     let pulled = false;
     try {
-      await execAsync(`git pull --rebase origin ${branch}`);
+      await execAsync(`git fetch origin ${branch}`);
+      await execAsync(`git rebase --autostash origin/${branch}`);
       pulled = true;
     } catch (err) {
-      console.warn('git pull failed:', (err as Error).message);
+      console.warn('git rebase failed:', (err as Error).message);
     }
 
     // 5. Push local commits to remote origin

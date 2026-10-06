@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { UserConfig } from '../../shared/types';
 import { format } from 'date-fns';
 import { 
@@ -9,7 +9,8 @@ import {
   Settings as SettingsIcon, 
   Plus, 
   User as UserIcon,
-  Flame
+  Flame,
+  RefreshCw
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -19,6 +20,7 @@ interface NavbarProps {
   activeUserId: string;
   setActiveUserId: (id: string) => void;
   onOpenAddTask: () => void;
+  onSync: () => Promise<void>;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -28,9 +30,20 @@ export const Navbar: React.FC<NavbarProps> = ({
   activeUserId,
   setActiveUserId,
   onOpenAddTask,
+  onSync,
 }) => {
   const activeUser = users.find((u) => u.id === activeUserId) || users[0];
   const formattedDate = format(new Date(), 'EEEE, MMMM d');
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleSyncClick = async () => {
+    setIsSyncing(true);
+    try {
+      await onSync();
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   const navItems = [
     { id: 'today', label: 'Today', icon: CheckSquare },
@@ -82,8 +95,18 @@ export const Navbar: React.FC<NavbarProps> = ({
           })}
         </nav>
 
-        {/* Right Actions: Add Task & Active User Switcher */}
+        {/* Right Actions: Sync, Add Task & Active User Switcher */}
         <div className="flex items-center gap-3">
+          <button
+            onClick={handleSyncClick}
+            disabled={isSyncing}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-300 font-medium text-sm transition-all disabled:opacity-50"
+            title="Sync Git Repository"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-indigo-400' : ''}`} />
+            <span className="hidden sm:inline">{isSyncing ? 'Syncing...' : 'Sync'}</span>
+          </button>
+
           <button
             onClick={onOpenAddTask}
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-600/20 text-indigo-300 hover:bg-indigo-600/30 border border-indigo-500/30 font-medium text-sm transition-all"
@@ -102,7 +125,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               {users.map((u) => (
                 <option key={u.id} value={u.id} className="bg-slate-900 text-slate-200">
-                  {u.name} ({u.githubUsername})
+                  {u.name}
                 </option>
               ))}
             </select>

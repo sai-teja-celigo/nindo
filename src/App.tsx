@@ -12,7 +12,8 @@ import {
   fetchCommitment, 
   saveCommitment, 
   fetchCheckIn, 
-  saveCheckIn 
+  saveCheckIn,
+  syncGitRepo
 } from './api';
 import { Navbar } from './components/Navbar';
 import { AddTaskModal } from './components/AddTaskModal';
@@ -66,9 +67,28 @@ export function App() {
     }
   }, [activeUserId, todayStr]);
 
+  const handleSyncAll = useCallback(async () => {
+    try {
+      await syncGitRepo('manual sync');
+    } catch (err) {
+      console.warn('Git sync warning:', err);
+    } finally {
+      await loadData();
+    }
+  }, [loadData]);
+
   useEffect(() => {
     loadData();
-  }, [loadData]);
+
+    // Auto sync on tab/window focus
+    const onFocus = () => {
+      handleSyncAll();
+    };
+    window.addEventListener('focus', onFocus);
+    return () => {
+      window.removeEventListener('focus', onFocus);
+    };
+  }, [loadData, handleSyncAll]);
 
   // Handlers
   const handleToggleTaskComplete = async (task: Task) => {
@@ -122,7 +142,6 @@ export function App() {
     rollovers: { taskId: string; newDateShortcut: string }[];
     droppedTaskIds: string[];
   }) => {
-    // 1. Process task rollovers & dropped tasks
     for (const roll of payload.rollovers) {
       const task = tasks.find((t) => t.id === roll.taskId);
       if (task) {
@@ -135,11 +154,9 @@ export function App() {
       await updateTask(dropId, { status: 'DROPPED' });
     }
 
-    // 2. Refresh tasks after modifications
     const updatedTasks = await fetchTasks();
     setTasks(updatedTasks);
 
-    // 3. Save EOD check-in
     const committedIds = commitment ? commitment.committedTaskIds : [];
     const newCheckIn = await saveCheckIn({
       date: todayStr,
@@ -175,12 +192,10 @@ export function App() {
     );
   }
 
-  // Today Tasks for Start Day
   const todayUserTasks = tasks.filter(
     (t) => t.owner === activeUserId && t.currentDueDate === todayStr
   );
 
-  // Committed Tasks for End Day
   const committedUserTasks = commitment
     ? tasks.filter((t) => commitment.committedTaskIds.includes(t.id))
     : todayUserTasks;
@@ -194,6 +209,7 @@ export function App() {
         activeUserId={activeUserId}
         setActiveUserId={setActiveUserId}
         onOpenAddTask={() => setIsAddTaskOpen(true)}
+        onSync={handleSyncAll}
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-8">
