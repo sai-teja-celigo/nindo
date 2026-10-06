@@ -42,7 +42,14 @@ export async function getGitStatus(): Promise<GitStatus> {
   }
 }
 
+let isSyncingGit = false;
+
 export async function performGitSync(commitMessage?: string): Promise<{ success: boolean; message: string }> {
+  if (isSyncingGit) {
+    return { success: true, message: 'Git sync is already in progress.' };
+  }
+  isSyncingGit = true;
+
   try {
     // 1. Stage config, data and project changes
     await execAsync('git add -A');
@@ -99,5 +106,7 @@ export async function performGitSync(commitMessage?: string): Promise<{ success:
     const errorMsg = (err as Error).message;
     console.error('Git sync error:', errorMsg);
     return { success: false, message: `Git sync failed: ${errorMsg}` };
+  } finally {
+    isSyncingGit = false;
   }
 }
