@@ -8,7 +8,9 @@
     "currentDueDate": "2026-10-06",
     "status": "OPEN",
     "rolloverCount": 0,
-    "createdDuringDay": false
+    "createdDuringDay": false,
+    "githubIssueNumber": 1,
+    "githubIssueUrl": "https://github.com/sai-teja-celigo/nindo/issues/1"
   },
   {
     "id": "2",
@@ -19,7 +21,9 @@
     "currentDueDate": "2026-10-06",
     "status": "OPEN",
     "rolloverCount": 0,
-    "createdDuringDay": false
+    "createdDuringDay": false,
+    "githubIssueNumber": 3,
+    "githubIssueUrl": "https://github.com/sai-teja-celigo/nindo/issues/3"
   },
   {
     "id": "3",
@@ -30,7 +34,9 @@
     "currentDueDate": "2026-10-06",
     "status": "OPEN",
     "rolloverCount": 0,
-    "createdDuringDay": false
+    "createdDuringDay": false,
+    "githubIssueNumber": 5,
+    "githubIssueUrl": "https://github.com/sai-teja-celigo/nindo/issues/5"
   },
   {
     "id": "4",
@@ -41,7 +47,9 @@
     "currentDueDate": "2026-10-08",
     "status": "OPEN",
     "rolloverCount": 0,
-    "createdDuringDay": false
+    "createdDuringDay": false,
+    "githubIssueNumber": 7,
+    "githubIssueUrl": "https://github.com/sai-teja-celigo/nindo/issues/7"
   },
   {
     "id": "5",
@@ -52,7 +60,9 @@
     "currentDueDate": "2026-10-25",
     "status": "OPEN",
     "rolloverCount": 0,
-    "createdDuringDay": false
+    "createdDuringDay": false,
+    "githubIssueNumber": 9,
+    "githubIssueUrl": "https://github.com/sai-teja-celigo/nindo/issues/9"
   },
   {
     "id": "6",
@@ -63,7 +73,9 @@
     "currentDueDate": "2026-10-06",
     "status": "OPEN",
     "rolloverCount": 1,
-    "createdDuringDay": false
+    "createdDuringDay": false,
+    "githubIssueNumber": 11,
+    "githubIssueUrl": "https://github.com/sai-teja-celigo/nindo/issues/11"
   },
   {
     "id": "7",
@@ -74,7 +86,9 @@
     "currentDueDate": "2026-10-06",
     "status": "OPEN",
     "rolloverCount": 0,
-    "createdDuringDay": false
+    "createdDuringDay": false,
+    "githubIssueNumber": 15,
+    "githubIssueUrl": "https://github.com/sai-teja-celigo/nindo/issues/15"
   },
   {
     "id": "8",
@@ -85,7 +99,9 @@
     "currentDueDate": "2026-10-06",
     "status": "OPEN",
     "rolloverCount": 0,
-    "createdDuringDay": false
+    "createdDuringDay": false,
+    "githubIssueNumber": 18,
+    "githubIssueUrl": "https://github.com/sai-teja-celigo/nindo/issues/18"
   },
   {
     "id": "9",
@@ -96,7 +112,9 @@
     "currentDueDate": "2026-10-09",
     "status": "OPEN",
     "rolloverCount": 0,
-    "createdDuringDay": false
+    "createdDuringDay": false,
+    "githubIssueNumber": 25,
+    "githubIssueUrl": "https://github.com/sai-teja-celigo/nindo/issues/25"
   },
   {
     "id": "1791308894191",
@@ -107,6 +125,8 @@
     "currentDueDate": "2026-10-06",
     "status": "OPEN",
     "rolloverCount": 0,
-    "createdDuringDay": false
+    "createdDuringDay": false,
+    "githubIssueNumber": 37,
+    "githubIssueUrl": "https://github.com/sai-teja-celigo/nindo/issues/37"
   }
 ]
