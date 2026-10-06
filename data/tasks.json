@@ -230,7 +230,7 @@
     "createdAt": "2026-10-06T18:47:07Z",
     "originalDueDate": "2026-10-25",
     "currentDueDate": "2026-10-25",
-    "status": "OPEN",
+    "status": "DROPPED",
     "rolloverCount": 0,
     "createdDuringDay": false
   },
